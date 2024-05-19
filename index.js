@@ -5,7 +5,6 @@ const deploy = require("./deploy-commands");
 require("dotenv").config();
 const token = process.env.TOKEN;
 
-
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 client.commands = new Collection();
@@ -24,14 +23,14 @@ for (const folder of commandFolders) {
       client.commands.set(command.data.name, command);
     } else {
       console.log(
-        `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
+        `[AVISO] O comando em ${filePath} está faltando uma propriedade "data" ou "execute" necessária.`
       );
     }
   }
 }
 
 client.once(Events.ClientReady, (readyClient) => {
-  console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+  console.log(`Pronto! Logado como ${readyClient.user.tag}`);
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
@@ -39,7 +38,9 @@ client.on(Events.InteractionCreate, async (interaction) => {
   const command = interaction.client.commands.get(interaction.commandName);
 
   if (!command) {
-    console.error(`No command matching ${interaction.commandName} was found.`);
+    console.error(
+      `Nenhum comando correspondente a ${interaction.commandName} foi encontrado.`
+    );
     return;
   }
 
@@ -49,12 +50,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
     console.error(error);
     if (interaction.replied || interaction.deferred) {
       await interaction.followUp({
-        content: "There was an error while executing this command!",
+        content: "Houve um erro ao executar este comando!",
         ephemeral: true,
       });
     } else {
       await interaction.reply({
-        content: "There was an error while executing this command!",
+        content: "Houve um erro ao executar este comando!",
         ephemeral: true,
       });
     }
