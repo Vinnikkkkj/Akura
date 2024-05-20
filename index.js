@@ -5,7 +5,7 @@ const deploy = require("./deploy-commands");
 require("dotenv").config();
 const token = process.env.TOKEN;
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers] });
 
 client.commands = new Collection();
 const foldersPath = path.join(__dirname, "slash");
@@ -59,6 +59,25 @@ client.on(Events.InteractionCreate, async (interaction) => {
         ephemeral: true,
       });
     }
+  }
+});
+
+client.on(Events.GuildMemberAdd, async (member) => {
+  const defaultRolesFile = path.join(__dirname, 'defaultRoles.json');
+
+  if (fs.existsSync(defaultRolesFile)) {
+    const defaultRoles = JSON.parse(fs.readFileSync(defaultRolesFile, 'utf8'));
+
+    console.log(`Atribuindo cargos padrão aos novos membros: ${defaultRoles}`);
+
+    try {
+      await member.roles.add(defaultRoles);
+      console.log(`Cargos atribuídos a ${member.user.tag}`);
+    } catch (error) {
+      console.error(`Erro ao atribuir cargos ao membro ${member.user.tag}:`, error);
+    }
+  } else {
+    console.log('Nenhum cargo padrão configurado.');
   }
 });
 
